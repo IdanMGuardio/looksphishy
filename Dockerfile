@@ -4,8 +4,16 @@ ENV GOOGLE_APPLICATION_CREDENTIALS /var/secrets/google/key.json
 ENV CHROME_DRIVER_PATH /usr/bin/chromedriver
 
 WORKDIR /code
-RUN apt-get update && apt-get install -y gnupg
-RUN curl -fsSL https://deb.debian.org/debian-archive/debian-archive-keyring.gpg | gpg --dearmor -o /usr/share/keyrings/debian-archive-keyring.gpg
+# Install curl and gnupg
+RUN apt-get update && \
+    apt-get install -y curl gnupg && \
+    rm -rf /var/lib/apt/lists/*
+
+# Add Debian archive keyring
+RUN curl -fsSL http://ftp.debian.org/debian/pool/main/d/debian-archive-keyring/debian-archive-keyring_2023.3+deb12u1_all.deb -o keyring.deb && \
+    dpkg -i keyring.deb && \
+    rm keyring.deb
+
 RUN apt-get update && \
     apt-get install -y \
     manpages-dev \
